@@ -1,0 +1,632 @@
+	  
+			//Connect to LiteSql
+			 Class.forName("org.sqlite.JDBC");
+			 	final Connection conn =
+			      DriverManager.getConnection("jdbc:sqlite://192.168.1.8/hosp/talon/talon.db");
+ 		
+	 	
+			 	
+			 	Statement stat = conn.createStatement();
+	/*
+			 	stat.executeUpdate("drop table if exists TALON;");
+			    stat.executeUpdate("create table TALON (" +
+			    		"num INTEGER PRIMARY KEY AUTOINCREMENT," +	//1
+			    		"data_reg DATA,"+			//2
+			    		"fio VARCHAR," +						//3
+			    		"year VARCHAR," +						//4
+			    		"num_kart VARCHAR,"+					//5
+			    		"place_of_work VARCHAR,"+					//6
+			    		"num_room VARCHAR,"+					//7
+			    		"data_in_doc DATA,"+						//8
+			    		"doc_name VARCHAR);");						//9
+	*/
+			    final PreparedStatement prep = conn.prepareStatement(
+			      "insert into TALON values (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+
+//			    final PreparedStatement gdt = conn.prepareStatement(
+//					      "Select data('now');");
+
+			    // add current data
+			    
+			    /*		    
+				prep.setString(1, "1111111");
+				
+				prep.setString(2, "22222");
+			    prep.setString(3, "3333333");
+			    prep.setString(4, "444444");
+			    //prep.addBatch();	
+				prep.executeUpdate();
+				System.out.println("What's ok.");
+				prep.close(); 
+//				conn.close();
+//			    conn.setAutoCommit(false);
+//			    prep.executeBatch();
+//			    conn.setAutoCommit(true);
+	*/
+			 //Visual reflection 
+			    JTabbedPane jtp = new JTabbedPane();	
+			    
+			    JPanel panel1 = new JPanel();
+			        panel1.setLayout(null);
+					jtp.add("Регистрация Талона", panel1);  
+					
+					JPanel panel2 = new JPanel();
+					panel2.setLayout(null);
+					jtp.add("Расписание", panel2);
+					
+					JPanel panel3 = new JPanel();
+					panel3.setLayout(null);
+					jtp.add("Врачи", panel3);
+													
+					//Box box1 = Box.createHorizontalBox();
+					
+					
+					JLabel fio = new JLabel("ФИО:");
+					fio.setBounds(10, 10, 36, 20);
+					final JTextField fio_str = new JTextField(30);
+					fio_str.setBounds(52, 10, 240, 20);
+					
+					JLabel year = new JLabel("Год рождения:");
+					year.setBounds(10, 40, 104, 20);
+					final JTextField year_str = new JTextField(3);
+					year_str.setBounds(106, 40, 32, 20);
+					
+					JLabel num_kart = new JLabel("Номер амбулаторной карты:");
+					num_kart.setBounds(10, 70, 200, 20);
+					final JTextField num_kart_str = new JTextField(15);
+					num_kart_str.setBounds(180, 70, 72, 20);
+					
+					JLabel place_of_work = new JLabel("Место работы:");
+					place_of_work.setBounds(10, 100, 104, 20);
+					final JTextField place_of_work_str = new JTextField(30);
+					place_of_work_str.setBounds(10, 130, 285, 20);
+					
+					JLabel num_room = new JLabel("Номер кабинета:");
+					num_room.setBounds(10, 160, 120, 20);
+					final JTextField num_room_str = new JTextField(4);
+					num_room_str.setBounds(110, 160, 32, 20);
+					
+					JLabel data_in_doc = new JLabel("Дата приема к врачу:");
+					data_in_doc.setBounds(10, 190, 160, 20);
+					final JTextField data_in_doc_str = new JTextField(5);
+					data_in_doc_str.setBounds(140, 190, 64, 20);
+					
+					JLabel time_in_doc = new JLabel("Время(12-15):");
+					time_in_doc.setBounds(10, 220, 104, 20);
+					final JTextField time_in_doc_str = new JTextField(4);
+					time_in_doc_str.setBounds(96, 220, 40, 20);
+
+					JLabel in_doc_table = new JLabel("Таблица пациентов на прием к врачу:", SwingConstants.RIGHT);
+					in_doc_table.setBounds(510, 10, 260, 20);
+					
+					Box box0 = Box.createVerticalBox();
+					box0.setBounds(300, 40, 522, 400);
+					
+					String[]  colname= {"Дата рег.", "Ф.И.О.", "Год рож.", "Ном. карты", "Место работы", "Дата приема", "Время приема"};
+//					String showlog = new String("");
+					final String[][] dataTable = new String[23][7];
+					final JTable Table = new JTable(dataTable, colname);
+//			        final JTable table = new JTable(new DefaultTableModel(new String[]{"1","2","3"},6));
+
+				    //Изменяем ширину столбцов таблицы
+				    Table.getColumnModel().getColumn(0).setPreferredWidth(48);
+				    Table.getColumnModel().getColumn(1).setPreferredWidth(180);
+				    Table.getColumnModel().getColumn(2).setPreferredWidth(30);
+				    Table.getColumnModel().getColumn(3).setPreferredWidth(36);
+				    Table.getColumnModel().getColumn(4).setPreferredWidth(150);
+				    Table.getColumnModel().getColumn(5).setPreferredWidth(48);
+				    Table.getColumnModel().getColumn(6).setPreferredWidth(30);
+				    //Изменяем высоту строк таблицы
+//				    jTable1.setRowHeight(0,10);
+//				    jTable1.setRowHeight(1,15);
+//				    jTable1.setRowHeight(2,20);
+//				    jTable1.setRowHeight(3,25);
+//				    jTable1.setRowHeight(4,30);
+//				    jTable1.setRowHeight(5,35);
+//				    jTable1.setRowHeight(6,40);
+//				    jTable1.setRowHeight(7,45);
+				    
+				    JScrollPane scrollPane = new JScrollPane(Table);
+				    Table.setFillsViewportHeight(true);
+				    box0.add(scrollPane);
+
+				    final JButton Add_Data = new JButton("Напечатать талон");
+				    Add_Data.setBounds(10, 250, 180, 30);
+				    final JButton Reg_Talon = new JButton("Зарезервировтаь талон");
+				    Reg_Talon.setBounds(10, 280, 180, 30);
+				    
+				    final JButton Upd_Tab = new JButton("Обновление таблицы");
+				    Upd_Tab.setBounds(10, 310, 180, 30);
+
+		
+					panel1.add(fio);
+					panel1.add(fio_str);
+					panel1.add(year);
+					panel1.add(year_str);
+					panel1.add(num_kart);
+					panel1.add(num_kart_str);
+					panel1.add(place_of_work);
+					panel1.add(place_of_work_str);
+					panel1.add(num_room);
+					panel1.add(num_room_str);
+					panel1.add(data_in_doc);
+					panel1.add(data_in_doc_str);
+					panel1.add(time_in_doc);
+					panel1.add(time_in_doc_str);
+					panel1.add(in_doc_table);
+					panel1.add(box0);
+					panel1.add(Add_Data);
+					panel1.add(Reg_Talon);
+					panel1.add(Upd_Tab);
+					
+					
+//panel2
+					Box box_p2 = Box.createVerticalBox();
+					box_p2.setBounds(300, 40, 522, 400);
+					String[] items = {
+				            "Аврамчук О.С.",
+				            "Брянцева Е.Р.",
+				            "Бычковский Н.Ф."
+				        };
+					JComboBox comboBox = new JComboBox(items);
+					comboBox.setBounds(10, 10, 150, 25);
+
+					String[]  colname_p2= {"Ф.И.О.", "Дата и время приема", "Продолжительность приема"};
+//					String showlog = new String("");
+					String[][] dataTable_p2 = new String[23][3];
+					JTable Table_p2 = new JTable(dataTable_p2, colname_p2);
+					
+				    //Изменяем ширину столбцов таблицы
+				    Table_p2.getColumnModel().getColumn(0).setPreferredWidth(48);
+				    Table_p2.getColumnModel().getColumn(1).setPreferredWidth(180);
+				    Table_p2.getColumnModel().getColumn(2).setPreferredWidth(30);
+				    
+				    JScrollPane scrollPane_p2 = new JScrollPane(Table_p2);
+				    box_p2.add(scrollPane_p2);
+					
+					panel2.add(comboBox);
+					panel2.add(box_p2);
+					
+//panel3
+					JLabel doc_table = new JLabel("Таблица врачей:", SwingConstants.RIGHT);
+					doc_table.setBounds(510, 10, 260, 20);
+					
+					Box box_p3 = Box.createVerticalBox();
+					box_p3.setBounds(300, 40, 522, 400);
+					
+					String[]  colname_p3= {"Ф.И.О.", "Специальность", "Номер кабинета"};
+//					String showlog = new String("");
+					String[][] dataTable_p3 = new String[23][3];
+					JTable Table_p3 = new JTable(dataTable_p3, colname_p3);
+				    //Изменяем ширину столбцов таблицы
+				    Table_p3.getColumnModel().getColumn(0).setPreferredWidth(48);
+				    Table_p3.getColumnModel().getColumn(1).setPreferredWidth(180);
+				    Table_p3.getColumnModel().getColumn(2).setPreferredWidth(30);
+				    
+				    JScrollPane scrollPane_p3 = new JScrollPane(Table_p3);
+				    box_p3.add(scrollPane_p3);
+
+				    panel3.add(doc_table);
+				    panel3.add(box_p3);
+					
+					
+
+ //Обработчики
+				    
+/*				    
+			        ActionListener actionListener = new ActionListener() {
+			            public void actionPerformed(ActionEvent e) {
+			                JComboBox box = (JComboBox)e.getSource();
+			                        String item = (String)box.getSelectedItem();
+			                        label.setText(item);
+			            }
+			        };
+*/
+					Add_Data.addActionListener(new java.awt.event.ActionListener(){
+						public void actionPerformed(java.awt.event.ActionEvent evt) {
+							try{
+								
+								prep.setString(2, (new java.text.SimpleDateFormat("dd-MMM-yy HH:mm ")).format(java.util.Calendar.getInstance ().getTime()));
+								prep.setString(3, fio_str.getText());
+								prep.setString(4, year_str.getText());
+								prep.setString(5, num_kart_str.getText());
+								prep.setString(6, place_of_work_str.getText());
+								prep.setString(7, num_room_str.getText());
+								prep.setString(8, data_in_doc_str.getText()+time_in_doc_str.getText());
+							    prep.setString(9, doc_name_str.getText());
+
+
+							    conn.setAutoCommit(false);
+							    prep.executeUpdate();
+							    conn.setAutoCommit(true);
+
+//							    prep = null;
+//							    prep.setString(1, "select max(num) from TALON");
+							    conn.setAutoCommit(false);
+//							    System.out.println("max = "+prep.executeQuery());
+							    ResultSet rs = conn.createStatement().executeQuery("select max(num) from TALON");
+//							    while(rs.next())
+//							      {
+							        // read the result set
+//							        System.out.println("max = " + rs.getString("max(num)"));
+//							      }
+							    conn.setAutoCommit(true);
+							    
+			    
+							    
+							    
+								//PRINT SERVICE	  
+								  PrintService[] printers = PrintServiceLookup.lookupPrintServices(null, null);
+//								  
+								  PrintService service = PrintServiceLookup.lookupDefaultPrintService();
+								  for(int i=0; i<printers.length; i++){
+									  if (printers[i].getName().equals("POS58 Driver")){
+										  service=printers[i];	
+//										  System.out.println("service: " + printers[i].getName()); 
+								      }
+								  }
+								  
+//								  String defaultPrinter =service.getName();
+							    		//"POS58 Driver";
+							    PrintServiceLookup.lookupDefaultPrintService().getName();
+							    //System.out.println("Default printer: " + defaultPrinter);
+							    // PrintService service = PrintServiceLookup.lookupDefaultPrintService();
+//							    PrintService service=printers[4];
+							    // prints the famous hello world! plus a form feed
+
+							    String       head_talon="================================\n";
+							    head_talon = head_talon+"        ФКУЗ 'МСЧ МВД России    \n";
+							    head_talon = head_talon+"       по Челябинской области'  \n";
+							    head_talon = head_talon+"            ТАЛОН №"+rs.getString("max(num)")+"\n";
+							    head_talon = head_talon+"         на прием к врачу       \n";
+							    head_talon = head_talon+"1. Ф.И.О. больного______________\n";
+							    head_talon = head_talon+fio_str.getText()+"\n";
+							    head_talon = head_talon+"2. Год рождения_"+year_str.getText()+"\n";
+							    head_talon = head_talon+"3. Ном. амбул-ой карты_"+num_kart_str.getText()+"\n";
+							    head_talon = head_talon+"4. Место работы (сот-к,работник)\n";
+							    head_talon = head_talon+place_of_work_str.getText()+"\n";
+							    head_talon = head_talon+"5. Кабинет №"+num_room_str.getText()+" время "+time_in_doc_str.getText()+"\n";
+							    head_talon = head_talon+"6. Специальность и фамилия врача\n";
+							    head_talon = head_talon+doc_name_str.getText()+"\n";
+							    head_talon = head_talon+"7. Дата_"+data_in_doc_str.getText()+"\n";
+							    head_talon = head_talon+"          (число, месяц, год)   \n";
+							    head_talon = head_talon+"8. Время выдачи:"+new java.text.SimpleDateFormat("dd-MMM-yy HH:mm ").format(java.util.Calendar.getInstance ().getTime())+"\n";
+							    head_talon = head_talon+"================================\n";
+							    head_talon = head_talon+"      СТАТИСТИЧЕСКИЙ ТАЛОН      \n";
+							    head_talon = head_talon+"1.Посещение:____________________\n";
+							    head_talon = head_talon+"           (певичное, вторичное)\n";
+							    head_talon = head_talon+"2.Повод обращения:              \n";
+							    head_talon = head_talon+"-заболевание____________________\n";
+							    head_talon = head_talon+"-проф.осмотр____________________\n";
+							    head_talon = head_talon+"-комиссионный___________________\n";
+							    head_talon = head_talon+"-справка,обследование___________\n";
+							    head_talon = head_talon+"-больной с переферии____________\n";
+							    head_talon = head_talon+"-принят своим уч.врачем_________\n";
+							    head_talon = head_talon+"3.Диагноз установленный_________\n";
+							    head_talon = head_talon+"________________________________\n";
+							    head_talon = head_talon+"      (наименование, код)       \n";
+							    head_talon = head_talon+"4.Устан-ен в первые да(+),нет(-)\n";
+							    head_talon = head_talon+"5.Диспанс-ый(взят,справка,снят) \n";
+							    head_talon = head_talon+"6.Травмы и отравления(производс-\n";
+							    head_talon = head_talon+"твенные,в пути,в быту)(подч-ть) \n";
+							    head_talon = head_talon+"Подпись врача___________________\n";
+							    head_talon = head_talon+"================================\n";
+							    head_talon = head_talon+"                                \n";
+							    head_talon = head_talon+"                                \n";
+							    head_talon = head_talon+"                                \f\n";
+							    
+							     
+							    //InputStream is = new ByteArrayInputStream(head_talon.getBytes("Utf-8"));
+							    InputStream is = new ByteArrayInputStream(head_talon.getBytes("Cp1251"));
+							    
+							 
+							    PrintRequestAttributeSet  pras = new HashPrintRequestAttributeSet();
+							    pras.add(new Copies(1));
+
+							    DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
+							    Doc doc = new SimpleDoc(is, flavor, null);
+							    
+							    DocPrintJob job = service.createPrintJob();
+
+							    PrintJobWatcher pjw = new PrintJobWatcher(job);	
+							    job.print(doc, pras);
+							    
+							 
+							    pjw.waitForDone();
+							    is.close();
+							    
+					//PRINT SERVICE END		    
+								
+														    
+							    
+							    
+							    
+							    
+							    
+							    //clear rows
+							    fio_str.setText("");
+							    year_str.setText("");
+							    num_kart_str.setText("");
+							    place_of_work_str.setText("");
+							    num_room_str.setText("");
+							    data_in_doc_str.setText("");
+							    doc_name_str.setText("");
+
+							}
+							catch (Exception e1){
+								e1.printStackTrace();
+								System.out.println("Error ");
+							}	
+						}
+					});
+//					ActionListener actionListener = new TActionListener();
+//					Add_Data.addActionListener(actionListener);
+					
+
+					
+					
+					Add_Data.addMouseListener(new MouseAdapter()
+					  {
+					   public void mouseEntered(MouseEvent e)
+					   {
+//						 PreparedStatement prep = conn.prepareStatement(
+								      //"insert into people values (?, ?);");
+						   Add_Data.setBackground(Color.yellow);
+					   }
+					   public void mouseExited(MouseEvent e)
+					   {
+						   Add_Data.setBackground(Color.white);
+					   } 
+					  });
+			 
+		 
+///REG TAlon
+					
+					Reg_Talon.addActionListener(new java.awt.event.ActionListener(){
+						public void actionPerformed(java.awt.event.ActionEvent evt) {
+							try{
+								
+	
+
+							}
+							catch (Exception e1){
+								e1.printStackTrace();
+								System.out.println("Error ");
+							}	
+						}
+					});
+//					ActionListener actionListener = new TActionListener();
+//					Add_Data.addActionListener(actionListener);
+					
+
+					
+					
+					Reg_Talon.addMouseListener(new MouseAdapter()
+					  {
+					   public void mouseEntered(MouseEvent e)
+					   {
+//						 PreparedStatement prep = conn.prepareStatement(
+								      //"insert into people values (?, ?);");
+						   Reg_Talon.setBackground(Color.green);
+					   }
+					   public void mouseExited(MouseEvent e)
+					   {
+						   Reg_Talon.setBackground(Color.white);
+					   } 
+					  });
+			 
+// UPD talon table
+					
+					Upd_Tab.addActionListener(new java.awt.event.ActionListener(){
+						public void actionPerformed(java.awt.event.ActionEvent evt) {
+							try{
+							//	System.out.println("I'm a live!");
+							    conn.setAutoCommit(false);
+//							    System.out.println("max = "+prep.executeQuery());
+							    ResultSet rs = conn.createStatement().executeQuery("select * from TALON");
+							    int j=0;
+							    //rs.getMetaData().getColumnCount();
+							    while(rs.next())
+							      {
+							    	//rs.getMetaData().getColumnCount(); узнать кол-во строчек
+							    	//System.out.println("j="+j);
+							    	for (int i=2; i<8; i++)
+							    	{
+							    		dataTable[j][i-2]=rs.getString(i);
+							    		//System.out.println("j="+j+" i="+i+" "+rs.getString(i));	
+							    	}
+							    	// read the result set
+							        
+							    	j++;
+    							      }
+							    conn.setAutoCommit(true);
+								
+//							    Table.setModel(getModel());
+							    Table.repaint();
+							    
+
+							}
+							catch (Exception e1){
+								e1.printStackTrace();
+								System.out.println("Error ");
+							}	
+						}
+					});
+//					ActionListener actionListener = new TActionListener();
+//					Add_Data.addActionListener(actionListener);
+					
+
+					
+					
+					Upd_Tab.addMouseListener(new MouseAdapter()
+					  {
+					   public void mouseEntered(MouseEvent e)
+					   {
+//						 PreparedStatement prep = conn.prepareStatement(
+								      //"insert into people values (?, ?);");
+						   Upd_Tab.setBackground(Color.green);
+					   }
+					   public void mouseExited(MouseEvent e)
+					   {
+						   Upd_Tab.setBackground(Color.white);
+					   } 
+					  });
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 // END APPL
+			//display
+			frame.setPreferredSize(new Dimension(1024, 600));
+
+//			frame.getContentPane().add(scrollPane);
+			frame.getContentPane().add(jtp);
+			frame.pack();
+			frame.setSize(1024, 600);
+			frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
+ 
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+====================
+
+public class TableDialogEditDemo extends JPanel {
+    private boolean DEBUG = false;
+
+    public TableDialogEditDemo() {
+        super(new GridLayout(1,0));
+
+        JTable table = new JTable(new MyTableModel());
+        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        table.setFillsViewportHeight(true);
+
+        //Create the scroll pane and add the table to it.
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        //Set up renderer and editor for the Favorite Color column.
+        table.setDefaultRenderer(Color.class,
+                                 new ColorRenderer(true));
+        table.setDefaultEditor(Color.class,
+                               new ColorEditor());
+
+        //Add the scroll pane to this panel.
+        add(scrollPane);
+    }
+    class MyTableModel extends AbstractTableModel {
+        private String[] columnNames = {"First Name",
+                                        "Favorite Color",
+                                        "Sport",
+                                        "# of Years",
+                                        "Vegetarian"};
+        private Object[][] data = {
+            {"Mary", new Color(153, 0, 153),
+             "Snowboarding", new Integer(5), new Boolean(false)},
+            {"Alison", new Color(51, 51, 153),
+             "Rowing", new Integer(3), new Boolean(true)},
+            {"Kathy", new Color(51, 102, 51),
+             "Knitting", new Integer(2), new Boolean(false)},
+            {"Sharon", Color.red,
+             "Speed reading", new Integer(20), new Boolean(true)},
+            {"Philip", Color.pink,
+             "Pool", new Integer(10), new Boolean(false)}
+        };
+
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        public int getRowCount() {
+            return data.length;
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public Object getValueAt(int row, int col) {
+            return data[row][col];
+        }
+
+        /*
+         * JTable uses this method to determine the default renderer/
+         * editor for each cell.  If we didn't implement this method,
+         * then the last column would contain text ("true"/"false"),
+         * rather than a check box.
+         */
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        public boolean isCellEditable(int row, int col) {
+            //Note that the data/cell address is constant,
+            //no matter where the cell appears onscreen.
+            if (col < 1) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        public void setValueAt(Object value, int row, int col) {
+            if (DEBUG) {
+                System.out.println("Setting value at " + row + "," + col
+                                   + " to " + value
+                                   + " (an instance of "
+                                   + value.getClass() + ")");
+            }
+
+            data[row][col] = value;
+            fireTableCellUpdated(row, col);
+
+            if (DEBUG) {
+                System.out.println("New value of data:");
+                printDebugData();
+            }
+        }
+
+        private void printDebugData() {
+            int numRows = getRowCount();
+            int numCols = getColumnCount();
+
+            for (int i=0; i < numRows; i++) {
+                System.out.print("    row " + i + ":");
+                for (int j=0; j < numCols; j++) {
+                    System.out.print("  " + data[i][j]);
+                }
+                System.out.println();
+            }
+            System.out.println("--------------------------");
+        }
+    }	
+
+    
+    
+    
+    
+    
+    
+
+	
